@@ -1,0 +1,4 @@
+rootProject.name = 'ExamenMPP'
+include 'Domain'
+include 'Repository'
+include 'SpringRest'
