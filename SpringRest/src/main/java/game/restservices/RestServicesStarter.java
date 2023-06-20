@@ -1,5 +1,6 @@
 package game.restservices;
 
+import game.repository.hibernate.HibernateUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ public class RestServicesStarter {
 
     public static void main(String[] args) {
         SpringApplication.run(RestServicesStarter.class, args);
+        HibernateUtils.closeSession();
     }
 
     @Bean(name="properties")

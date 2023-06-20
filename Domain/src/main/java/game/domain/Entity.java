@@ -1,11 +1,15 @@
 package game.domain;
 
-import java.io.Serial;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+
 import java.io.Serializable;
 
-public abstract class Entity<TID> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 57432978279372L;
+@MappedSuperclass
+public abstract class Entity<TID extends Serializable> implements Serializable {
+    @Id
+    @Column(name = "id")
     private TID id;
 
     public TID getId() {

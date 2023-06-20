@@ -14,9 +14,13 @@ repositories {
 dependencies {
     implementation project(':Domain')
     implementation project(':Repository')
+    implementation project(':Services')
 //    implementation project(':Services')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+
+    implementation 'org.hibernate:hibernate-core:6.2.2.Final'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

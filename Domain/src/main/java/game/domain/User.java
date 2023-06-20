@@ -1,10 +1,20 @@
 package game.domain;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 import java.util.UUID;
 
+@jakarta.persistence.Entity
+@Table(name = "users")
+@AttributeOverride(name = "id", column = @Column(name = "id"))
+
 public class User extends Entity<UUID> {
+    @Column(name = "username")
     private String name;
+    @Column(name = "user_password")
     private String password;
 
     public User() {
