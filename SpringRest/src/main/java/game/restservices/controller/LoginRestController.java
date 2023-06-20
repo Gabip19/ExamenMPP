@@ -1,4 +1,4 @@
-package game.restservices.game;
+package game.restservices.controller;
 
 import game.domain.User;
 import game.domain.validator.exceptions.LoginException;
@@ -16,7 +16,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/game/auth")
 public class LoginRestController {
-
     private Services srv;
 
     @Autowired
@@ -33,11 +32,12 @@ public class LoginRestController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user, HttpServletResponse response) {
         try {
-            UUID sessionId = srv.attemptLogin(user);
+            User sessionId = srv.attemptLogin(user);
 
             Cookie sessionCookie = new Cookie("SID", sessionId.toString());
             sessionCookie.setMaxAge(24 * 60 * 60);
             sessionCookie.setHttpOnly(true);
+            sessionCookie.setPath("/game");
             response.addCookie(sessionCookie);
 
             return new ResponseEntity<>(HttpStatus.OK);
@@ -54,6 +54,7 @@ public class LoginRestController {
             Cookie sessionCookie = new Cookie("SID", "");
             sessionCookie.setMaxAge(0);
             sessionCookie.setHttpOnly(true);
+            sessionCookie.setPath("/game");
             response.addCookie(sessionCookie);
 
             return new ResponseEntity<>(HttpStatus.OK);

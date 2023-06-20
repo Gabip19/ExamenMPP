@@ -19,6 +19,8 @@
 
         <!-- List of XML mapping files -->
         <mapping class="game.domain.User"/>
+        <mapping class="game.domain.Coordinates"/>
+        <mapping class="game.domain.Game"/>
 
     </session-factory>
 </hibernate-configuration>

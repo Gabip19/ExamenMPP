@@ -14,6 +14,7 @@ import java.util.Properties;
 public class RestServicesStarter {
 
     public static void main(String[] args) {
+//        HibernateUtils.getSessionFactory().openSession();
         SpringApplication.run(RestServicesStarter.class, args);
         HibernateUtils.closeSession();
     }
