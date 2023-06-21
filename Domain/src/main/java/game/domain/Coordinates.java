@@ -1,8 +1,8 @@
 package game.domain;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+
+import java.util.Objects;
 
 @jakarta.persistence.Entity
 @Table(name = "coordinates")
@@ -34,5 +34,18 @@ public class Coordinates extends Entity<Integer> {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coordinates that = (Coordinates) o;
+        return x == that.x && y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

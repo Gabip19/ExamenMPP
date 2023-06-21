@@ -23,6 +23,9 @@ public class Game extends Entity<UUID> {
     @JoinColumn(name = "winner_id")
     private User winner;
 
+    @Transient
+    private UUID activePlayerId;
+
     public Game() {
         setId(UUID.randomUUID());
     }
@@ -65,5 +68,17 @@ public class Game extends Entity<UUID> {
 
     public void setWinner(User winner) {
         this.winner = winner;
+    }
+
+    public UUID getActivePlayerId() {
+        return activePlayerId;
+    }
+
+    public void setActivePlayerId(UUID activePlayerId) {
+        this.activePlayerId = activePlayerId;
+    }
+
+    public void switchActivePlayer() {
+        activePlayerId = activePlayerId.equals(playerOneId) ? playerTwoId : playerOneId;
     }
 }

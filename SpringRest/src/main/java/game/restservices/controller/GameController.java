@@ -22,10 +22,26 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<?> startGame(@RequestBody Coordinates coordinates, @CookieValue(name = "SID") UUID sid) {
-        Game game = srv.startGame(coordinates, sid);
-        if (game != null) {
+    public ResponseEntity<?> startGame(
+            @RequestBody Coordinates coordinates,
+            @RequestHeader("Session-Id") UUID sid
+    ) {
+        if (srv.hasValidSession(sid)) {
+            Game game = srv.startGame(coordinates, sid);
             return new ResponseEntity<>(game, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/{gameId}/moves")
+    public ResponseEntity<?> makeMove(
+            @PathVariable UUID gameId,
+            @RequestBody Coordinates coordinates,
+            @RequestHeader("Session-Id") UUID sid
+    ) {
+        if (srv.hasValidSession(sid)) {
+            srv.makeMove(gameId, coordinates, sid);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
