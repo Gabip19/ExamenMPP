@@ -7,6 +7,7 @@ import game.domain.User;
 import game.domain.validator.exceptions.LoginException;
 import game.repository.GameRepository;
 import game.repository.UserRepository;
+import game.services.NotificationSystem;
 import game.services.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,13 @@ public class ConcreteService implements Services {
     private final Map<UUID, User> activeSessions = new HashMap<>();
     private final Queue<Game> openGames = new LinkedList<>();
     private final Map<UUID, Game> activeGames = new HashMap<>();
+    private final NotificationSystem notificationSystem;
 
     @Autowired
-    public ConcreteService(UserRepository userRepo, GameRepository gameRepo) {
+    public ConcreteService(UserRepository userRepo, GameRepository gameRepo, NotificationSystem notificationSystem) {
         this.userRepo = userRepo;
         this.gameRepo = gameRepo;
+        this.notificationSystem = notificationSystem;
     }
 
     @Override
@@ -74,6 +77,7 @@ public class ConcreteService implements Services {
             currentGame.setPlayerTwoId(activeSessions.get(sid).getId());
             currentGame.setPlayerTwoPlaneLocation(coordinates);
             activeGames.put(currentGame.getId(), currentGame);
+            notificationSystem.notifyGameStarted(currentGame);
             gameRepo.add(currentGame);
         }
         return currentGame;
@@ -90,9 +94,10 @@ public class ConcreteService implements Services {
         Game game = activeGames.get(gameId);
         if (user.getId().equals(game.getActivePlayerId())) {
             if (hasWon(game, user, coordinates)) {
-                // winning logic
+                notificationSystem.notifyGameEnded(game);
             } else {
                 game.switchActivePlayer();
+                notificationSystem.notifyNewMove(game, coordinates);
             }
         }
     }

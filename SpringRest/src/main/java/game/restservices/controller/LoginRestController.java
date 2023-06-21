@@ -35,6 +35,7 @@ public class LoginRestController {
             SessionData session = srv.attemptLogin(user);
 
             response.addHeader("Session-Id", session.getSessionId().toString());
+            response.addHeader("Access-Control-Expose-Headers", "Session-Id");
 
             return new ResponseEntity<>(session.getLoggedUser(), HttpStatus.OK);
         } catch (LoginException e) {

@@ -2,6 +2,7 @@ package game.restservices.controller;
 
 import game.domain.Coordinates;
 import game.domain.Game;
+import game.domain.GameDTO;
 import game.services.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,8 @@ public class GameController {
     ) {
         if (srv.hasValidSession(sid)) {
             Game game = srv.startGame(coordinates, sid);
-            return new ResponseEntity<>(game, HttpStatus.OK);
+            GameDTO gameDTO = new GameDTO(game.getId(), game.getActivePlayerId(), game.getWinner().getId());
+            return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
