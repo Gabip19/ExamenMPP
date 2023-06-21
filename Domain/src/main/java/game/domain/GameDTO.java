@@ -8,16 +8,20 @@ public class GameDTO implements Serializable {
     private UUID activePlayerId;
     private UUID winnerId;
 
-    public GameDTO(UUID gameId, UUID activePlayerId, UUID winnerId) {
+    public GameDTO(UUID gameId, UUID activePlayerId, User winner) {
         this.gameId = gameId;
         this.activePlayerId = activePlayerId;
+        UUID winnerId = null;
+        if (winner != null) winnerId = winner.getId();
         this.winnerId = winnerId;
     }
 
     public GameDTO(Game game) {
         this.gameId = game.getId();
         this.activePlayerId = game.getActivePlayerId();
-        this.winnerId = game.getWinner().getId();
+        UUID winnerId = null;
+        if (game.getWinner() != null) winnerId = game.getWinner().getId();
+        this.winnerId = winnerId;
     }
 
     public GameDTO() {

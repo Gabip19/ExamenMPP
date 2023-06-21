@@ -5,6 +5,7 @@ import game.domain.Game;
 import game.domain.SessionData;
 import game.domain.User;
 import game.domain.validator.exceptions.LoginException;
+import game.repository.CoordinatesRepository;
 import game.repository.GameRepository;
 import game.repository.UserRepository;
 import game.services.NotificationSystem;
@@ -18,15 +19,17 @@ import java.util.*;
 public class ConcreteService implements Services {
     private final UserRepository userRepo;
     private final GameRepository gameRepo;
+    private final CoordinatesRepository coordinatesRepo;
     private final Map<UUID, User> activeSessions = new HashMap<>();
     private final Queue<Game> openGames = new LinkedList<>();
     private final Map<UUID, Game> activeGames = new HashMap<>();
     private final NotificationSystem notificationSystem;
 
     @Autowired
-    public ConcreteService(UserRepository userRepo, GameRepository gameRepo, NotificationSystem notificationSystem) {
+    public ConcreteService(UserRepository userRepo, GameRepository gameRepo, CoordinatesRepository coordinatesRepo, NotificationSystem notificationSystem) {
         this.userRepo = userRepo;
         this.gameRepo = gameRepo;
+        this.coordinatesRepo = coordinatesRepo;
         this.notificationSystem = notificationSystem;
     }
 
@@ -65,6 +68,7 @@ public class ConcreteService implements Services {
     @Override
     public Game startGame(Coordinates coordinates, UUID sid) {
         coordinates.setId(coordinates.getX() * 10 + coordinates.getY());
+        coordinatesRepo.add(coordinates);
         Game currentGame;
         if (openGames.isEmpty()) {
             currentGame = new Game();
@@ -94,6 +98,9 @@ public class ConcreteService implements Services {
         Game game = activeGames.get(gameId);
         if (user.getId().equals(game.getActivePlayerId())) {
             if (hasWon(game, user, coordinates)) {
+                game.setWinner(user);
+                gameRepo.update(game, gameId);
+                activeGames.remove(gameId);
                 notificationSystem.notifyGameEnded(game);
             } else {
                 game.switchActivePlayer();

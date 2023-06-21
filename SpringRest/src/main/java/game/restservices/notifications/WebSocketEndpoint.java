@@ -16,12 +16,7 @@ import java.util.UUID;
     encoders = NotificationEncoder.class
 )
 public class WebSocketEndpoint {
-    private final WebSocketsNotificationSystem notificationSystem;
-
-    @Autowired
-    public WebSocketEndpoint(WebSocketsNotificationSystem notificationSystem) {
-        this.notificationSystem = notificationSystem;
-    }
+    private static final WebSocketsNotificationSystem notificationSystem = new WebSocketsNotificationSystem();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") String userId) throws IOException {

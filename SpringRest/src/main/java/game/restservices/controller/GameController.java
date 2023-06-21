@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin
@@ -29,7 +30,7 @@ public class GameController {
     ) {
         if (srv.hasValidSession(sid)) {
             Game game = srv.startGame(coordinates, sid);
-            GameDTO gameDTO = new GameDTO(game.getId(), game.getActivePlayerId(), game.getWinner().getId());
+            GameDTO gameDTO = new GameDTO(game.getId(), null, game.getWinner());
             return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

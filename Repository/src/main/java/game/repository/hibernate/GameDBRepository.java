@@ -37,7 +37,21 @@ public class GameDBRepository implements GameRepository {
 
     @Override
     public void update(Game elem, UUID id) {
-
+        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+            Transaction transaction = null;
+            try {
+                transaction = session.beginTransaction();
+                Game game = session.get(Game.class, id);
+                game.setWinner(elem.getWinner());
+                session.merge(game);
+                transaction.commit();
+            } catch (RuntimeException e) {
+                System.err.println("[GAME REPO] Update game failed: " + e.getMessage());
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            }
+        }
     }
 
     @Override

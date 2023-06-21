@@ -58,6 +58,7 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
 
     @Override
     public void notifyNewMove(Game game, Coordinates coordinates) {
+        System.out.println("Sending new MOVE to " + game.getActivePlayerId());
         Notification notification = new Notification(
             NotificationType.NEW_MOVE,
             coordinates
