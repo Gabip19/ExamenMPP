@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin
@@ -26,7 +28,7 @@ public class GameController {
     public ResponseEntity<?> startGame(@RequestHeader("Session-Id") UUID sid) {
         if (srv.hasValidSession(sid)) {
             Game game = srv.startGame(sid);
-            GameDTO gameDTO = new GameDTO(game.getId(), null, null);
+            GameDTO gameDTO = new GameDTO(game);
             return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -39,9 +41,20 @@ public class GameController {
             @RequestHeader("Session-Id") UUID sid
     ) {
         if (srv.hasValidSession(sid)) {
-            srv.makeMove(gameId, coordinates, sid);
-            return new ResponseEntity<>(HttpStatus.OK);
+            Game game = srv.makeMove(gameId, coordinates, sid);
+            GameDTO gameDTO = new GameDTO(game);
+            return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        List<Game> games = srv.getAllGames();
+        List<GameDTO> gameDTOS = new ArrayList<>();
+        for (Game game : games) {
+            gameDTOS.add(new GameDTO(game));
+        }
+        return new ResponseEntity<>(gameDTOS, HttpStatus.OK);
     }
 }

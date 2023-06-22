@@ -3,15 +3,14 @@ package game.restservices.notifications;
 import game.domain.Coordinates;
 import game.domain.Game;
 import game.domain.GameDTO;
+import game.domain.User;
 import game.services.NotificationSystem;
 import jakarta.websocket.EncodeException;
 import jakarta.websocket.Session;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class WebSocketsNotificationSystem implements NotificationSystem {
@@ -29,28 +28,29 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
     }
 
     @Override
-    public void notifyGameStarted(Game game) {
+    public void notifyGameStarted(User user, List<Game> gameList) {
         Notification notification = new Notification(
             NotificationType.GAME_STARTED,
-            new GameDTO(game)
+            new ArrayList<>(gameList.stream().map((game) -> new GameDTO(game)).toList())
         );
         try {
-            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
-            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(user.getId()).getBasicRemote().sendObject(notification);
         } catch (EncodeException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void notifyGameEnded(Game game) {
+    public void notifyTopUpdate(List<Game> gameList) {
         Notification notification = new Notification(
             NotificationType.GAME_ENDED,
-            new GameDTO(game)
+            new ArrayList<>(gameList.stream().map((game) -> new GameDTO(game)).toList())
         );
+        System.out.println("Sending notification -----");
         try {
-            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
-            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
+            for (Session session : webSocketConnections.values()) {
+                session.getBasicRemote().sendObject(notification);
+            }
         } catch (EncodeException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,15 +58,15 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
 
     @Override
     public void notifyNewMove(Game game, Coordinates coordinates) {
-        System.out.println("Sending new MOVE to " + game.getId());
-        Notification notification = new Notification(
-            NotificationType.NEW_MOVE,
-            coordinates
-        );
-        try {
-            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
-        } catch (EncodeException | IOException e) {
-            throw new RuntimeException(e);
-        }
+//        System.out.println("Sending new MOVE to " + game.getId());
+//        Notification notification = new Notification(
+//            NotificationType.NEW_MOVE,
+//            coordinates
+//        );
+//        try {
+//            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
+//        } catch (EncodeException | IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }

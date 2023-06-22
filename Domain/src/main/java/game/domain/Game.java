@@ -2,6 +2,7 @@ package game.domain;
 
 import jakarta.persistence.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @AttributeOverride(name = "id", column = @Column(name = "id"))
 
 public class Game extends Entity<UUID> {
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private User player;
 
@@ -40,6 +41,21 @@ public class Game extends Entity<UUID> {
     private LocalDateTime startDate;
     @Column(name = "end_date")
     private LocalDateTime endDate;
+
+    @Enumerated
+    @Column(name = "status")
+    private GameStatus gameStatus;
+
+    @Column(name = "current_level")
+    private int currentLevel = 0;
+
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(int currentLevel) {
+        this.currentLevel = currentLevel;
+    }
 
     public Game() {
         setId(UUID.randomUUID());
@@ -89,6 +105,14 @@ public class Game extends Entity<UUID> {
         this.minePositions = minePositions;
     }
 
+    public GameStatus getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
     public List<Coordinates> getPlayerMoves() {
         return playerMoves;
     }
@@ -111,6 +135,18 @@ public class Game extends Entity<UUID> {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public long getDuration() {
+        if (getEndDate() != null) {
+            Duration duration = Duration.between(getStartDate(), getEndDate());
+            return Math.abs(duration.toSeconds());
+        }
+        return -1;
+    }
+
+    public void nextLevel() {
+        currentLevel++;
     }
 
     @Override

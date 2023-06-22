@@ -16,16 +16,18 @@ public class Coordinates extends Entity<UUID> {
     private int x;
     private int y;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     private Game game;
 
     public Coordinates(int x, int y) {
         this.x = x;
         this.y = y;
+        setId(UUID.randomUUID());
     }
 
     public Coordinates() {
+        setId(UUID.randomUUID());
     }
 
     public int getX() {

@@ -5,6 +5,7 @@ import game.domain.Game;
 import game.domain.SessionData;
 import game.domain.User;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface Services {
@@ -18,7 +19,11 @@ public interface Services {
 
     boolean hasValidSession(UUID sid);
 
-    void makeMove(UUID gameId, Coordinates coordinates, UUID sid);
+    Game makeMove(UUID gameId, Coordinates coordinates, UUID sid);
 
-    boolean hasWon(Game game, User user, Coordinates move);
+    List<Game> getAllGames();
+
+    List<Game> getAllFinishedGamesForUser(UUID userId);
+
+//    boolean hasWon(Game game, User user, Coordinates move);
 }

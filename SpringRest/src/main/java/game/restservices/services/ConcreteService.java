@@ -1,9 +1,6 @@
 package game.restservices.services;
 
-import game.domain.Coordinates;
-import game.domain.Game;
-import game.domain.SessionData;
-import game.domain.User;
+import game.domain.*;
 import game.domain.validator.exceptions.LoginException;
 import game.repository.CoordinatesRepository;
 import game.repository.GameRepository;
@@ -71,6 +68,8 @@ public class ConcreteService implements Services {
         currentGame.setScore(0);
         currentGame.setStartDate(LocalDateTime.now());
         currentGame.setPlayer(user);
+        currentGame.setGameStatus(GameStatus.PLAYING);
+        currentGame.setCurrentLevel(1);
 
         Random rand = new Random();
         for (int i = 1; i <= 4; i++) {
@@ -96,25 +95,65 @@ public class ConcreteService implements Services {
     }
 
     @Override
-    public void makeMove(UUID gameId, Coordinates coordinates, UUID sid) {
-//        User user = activeSessions.get(sid);
-//        Game game = activeGames.get(gameId);
-//        if (user.getId().equals(game.getActivePlayerId())) {
-//            if (hasWon(game, user, coordinates)) {
-//                game.setWinner(user);
-//                gameRepo.update(game, gameId);
-//                activeGames.remove(gameId);
-//                notificationSystem.notifyGameEnded(game);
-//            } else {
-//                game.switchActivePlayer();
-//                notificationSystem.notifyNewMove(game, coordinates);
-//            }
-//        }
+    public Game makeMove(UUID gameId, Coordinates coordinates, UUID sid) {
+        Game game = gameRepo.findById(gameId);
+
+        if (game.getGameStatus().equals(GameStatus.PLAYING) && coordinates.getX() == game.getCurrentLevel()) {
+            game.addPlayerMove(coordinates);
+            coordinatesRepo.add(coordinates);
+
+            for (Coordinates mine : game.getMinePositions()) {
+                if (coordinates.getX() == mine.getX() && coordinates.getY() == mine.getY()) {
+                    game.setGameStatus(GameStatus.ENDED);
+                    game.setEndDate(LocalDateTime.now());
+                    notificationSystem.notifyTopUpdate(getAllGames());
+                    gameRepo.update(game, gameId);
+                    return game;
+                }
+            }
+
+            game.setScore(game.getScore() + game.getCurrentLevel());
+
+            if (game.getCurrentLevel() == 4) {
+                game.setGameStatus(GameStatus.ENDED);
+                game.setEndDate(LocalDateTime.now());
+                notificationSystem.notifyTopUpdate(getAllGames());
+            } else {
+                game.nextLevel();
+            }
+
+            gameRepo.update(game, gameId);
+            return game;
+        }
+        return game;
     }
 
-    public boolean hasWon(Game game, User user, Coordinates move) {
-//        return game.getPlayerTwoId().equals(user.getId()) && game.getPlayerOnePlaneLocation().equals(move) ||
-//                game.getPlayerOneId().equals(user.getId()) && game.getPlayerTwoPlaneLocation().equals(move);
-        return false;
+    @Override
+    public List<Game> getAllGames() {
+        List<Game> getAllFinishedGames = gameRepo.findByGameStatus(GameStatus.ENDED);
+        getAllFinishedGames.sort((Game o1, Game o2) -> {
+            if (o1.getScore() == o2.getScore()) {
+                if (o1.getDuration() < o2.getDuration()) {
+                    return -1;
+                } else if (o1.getDuration() > o2.getDuration()) {
+                    return 1;
+                } return 0;
+            } else if (o1.getScore() > o2.getScore()) {
+                return -1;
+            } return 1;
+        });
+        return getAllFinishedGames;
     }
+
+    @Override
+    public List<Game> getAllFinishedGamesForUser(UUID userId) {
+        User user = userRepo.findById(userId);
+        return gameRepo.findByUserAndStatus(user, GameStatus.ENDED);
+    }
+
+//    public boolean hasWon(Game game, User user, Coordinates move) {
+////        return game.getPlayerTwoId().equals(user.getId()) && game.getPlayerOnePlaneLocation().equals(move) ||
+////                game.getPlayerOneId().equals(user.getId()) && game.getPlayerTwoPlaneLocation().equals(move);
+//        return false;
+//    }
 }
