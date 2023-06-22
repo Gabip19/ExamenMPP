@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/minesweeper/games")
+@RequestMapping("/random-moves/games")
 public class GameController {
     private Services srv;
 
@@ -37,11 +37,11 @@ public class GameController {
     @PostMapping("/{gameId}/moves")
     public ResponseEntity<?> makeMove(
             @PathVariable UUID gameId,
-            @RequestBody Coordinates coordinates,
+            @RequestBody Integer generatedNumber,
             @RequestHeader("Session-Id") UUID sid
     ) {
         if (srv.hasValidSession(sid)) {
-            Game game = srv.makeMove(gameId, coordinates, sid);
+            Game game = srv.makeMove(gameId, generatedNumber, sid);
             GameDTO gameDTO = new GameDTO(game);
             return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }

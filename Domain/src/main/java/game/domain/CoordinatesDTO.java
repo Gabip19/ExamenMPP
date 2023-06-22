@@ -1,30 +1,40 @@
 package game.domain;
 
 public class CoordinatesDTO {
-    private int x;
-    private int y;
+    private int position;
+    private int value;
+    private boolean owned;
 
     public CoordinatesDTO(Coordinates coordinates) {
-        x = coordinates.getX();
-        y = coordinates.getY();
+        this.position = coordinates.getPosition();
+        this.value = coordinates.getValue();
+        this.owned = coordinates.isOwned();
     }
 
     public CoordinatesDTO() {
     }
 
-    public int getX() {
-        return x;
+    public boolean isOwned() {
+        return owned;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setOwned(boolean owned) {
+        this.owned = owned;
     }
 
-    public int getY() {
-        return y;
+    public int getPosition() {
+        return position;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 }

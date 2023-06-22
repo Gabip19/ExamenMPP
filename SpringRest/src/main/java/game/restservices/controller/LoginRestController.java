@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/minesweeper/auth")
+@RequestMapping("/random-moves/auth")
 public class LoginRestController {
     private Services srv;
 

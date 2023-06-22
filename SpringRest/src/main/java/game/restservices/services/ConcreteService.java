@@ -65,24 +65,20 @@ public class ConcreteService implements Services {
     public Game startGame(UUID sid) {
         User user = activeSessions.get(sid);
         Game currentGame = new Game();
-        currentGame.setScore(0);
+        currentGame.setTotalSum(50);
         currentGame.setStartDate(LocalDateTime.now());
         currentGame.setPlayer(user);
         currentGame.setGameStatus(GameStatus.PLAYING);
-        currentGame.setCurrentLevel(1);
+        currentGame.setGenerationNumber(1);
+        currentGame.setCurrentPosition(-1);
 
         Random rand = new Random();
-        for (int i = 1; i <= 4; i++) {
-            int mineY = 1 + rand.nextInt(4);
+        for (int i = 0; i < 5; i++) {
+            int value = 3 + rand.nextInt(23);
 
-            Coordinates mine = new Coordinates(i, mineY);
-            currentGame.addMineCoordinate(mine);
+            Coordinates cell = new Coordinates(i, value);
+            currentGame.addConfigurationCoordinate(cell);
         }
-
-        int mineX = 1 + rand.nextInt(4);
-        int mineY = 1 + rand.nextInt(4);
-        Coordinates mine = new Coordinates(mineX, mineY);
-        currentGame.addMineCoordinate(mine);
 
         gameRepo.add(currentGame);
 
@@ -95,35 +91,35 @@ public class ConcreteService implements Services {
     }
 
     @Override
-    public Game makeMove(UUID gameId, Coordinates coordinates, UUID sid) {
+    public Game makeMove(UUID gameId, int generatedNumber, UUID sid) {
         Game game = gameRepo.findById(gameId);
+        if (game.getGameStatus().equals(GameStatus.PLAYING) && game.getGenerationNumber() <= 3 && 1 <= generatedNumber && generatedNumber <= 3) {
+            int nextPosition = game.getCurrentPosition() + generatedNumber;
 
-        if (game.getGameStatus().equals(GameStatus.PLAYING) && coordinates.getX() == game.getCurrentLevel()) {
-            game.addPlayerMove(coordinates);
-            coordinatesRepo.add(coordinates);
-
-            for (Coordinates mine : game.getMinePositions()) {
-                if (coordinates.getX() == mine.getX() && coordinates.getY() == mine.getY()) {
-                    game.setGameStatus(GameStatus.ENDED);
-                    game.setEndDate(LocalDateTime.now());
-                    notificationSystem.notifyTopUpdate(getAllGames());
-                    gameRepo.update(game, gameId);
-                    return game;
-                }
+            if (nextPosition >= 5) {
+                nextPosition = nextPosition % 5;
+                game.setTotalSum(game.getTotalSum() + 5);
             }
 
-            game.setScore(game.getScore() + game.getCurrentLevel());
+            final int nextPos = nextPosition;
+            game.getConfiguration().stream()
+                    .filter(coordinates -> coordinates.getPosition() == nextPos)
+                    .forEach(coordinates -> {
+                        if (!coordinates.isOwned()) {
+                            game.setTotalSum(game.getTotalSum() - coordinates.getValue());
+                            coordinates.setOwned(true);
+                            coordinatesRepo.update(coordinates, coordinates.getId());
+                        }
+                    });
 
-            if (game.getCurrentLevel() == 4) {
+            game.setGenerationNumber(game.getGenerationNumber() + 1);
+            game.setCurrentPosition(nextPos);
+
+            if (game.getGenerationNumber() == 3) {
                 game.setGameStatus(GameStatus.ENDED);
-                game.setEndDate(LocalDateTime.now());
-                notificationSystem.notifyTopUpdate(getAllGames());
-            } else {
-                game.nextLevel();
             }
 
             gameRepo.update(game, gameId);
-            return game;
         }
         return game;
     }
@@ -132,15 +128,12 @@ public class ConcreteService implements Services {
     public List<Game> getAllGames() {
         List<Game> getAllFinishedGames = gameRepo.findByGameStatus(GameStatus.ENDED);
         getAllFinishedGames.sort((Game o1, Game o2) -> {
-            if (o1.getScore() == o2.getScore()) {
-                if (o1.getDuration() < o2.getDuration()) {
-                    return -1;
-                } else if (o1.getDuration() > o2.getDuration()) {
-                    return 1;
-                } return 0;
-            } else if (o1.getScore() > o2.getScore()) {
+            if (o1.getTotalSum() > o2.getTotalSum()) {
                 return -1;
-            } return 1;
+            } else if (o1.getTotalSum() < o2.getTotalSum()) {
+                return 1;
+            }
+            return 0;
         });
         return getAllFinishedGames;
     }

@@ -1,6 +1,7 @@
 package game.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,52 +9,25 @@ import java.util.UUID;
 public class GameDTO implements Serializable {
     private UUID gameId;
     private User player;
-    private int score;
-    private long duration;
-    private int level;
+    private int totalSum;
+    private LocalDateTime startTime;
+    private int position;
     private GameStatus gameStatus;
-    private List<CoordinatesDTO> mines;
-    private List<CoordinatesDTO> moves;
-
-    public GameDTO(UUID gameId, User player, int score, long duration, int level, GameStatus gameStatus) {
-        this.gameId = gameId;
-        this.player = player;
-        this.score = score;
-        this.duration = duration;
-        this.level = level;
-        this.gameStatus = gameStatus;
-    }
+    private int generationNumber;
+    private List<CoordinatesDTO> configuration;
 
     public GameDTO(Game game) {
         gameId = game.getId();
         player = game.getPlayer();
-        score = game.getScore();
-        duration = game.getDuration();
-        level = game.getCurrentLevel();
+        totalSum = game.getTotalSum();
+        startTime = game.getStartDate();
+        position = game.getCurrentPosition();
         gameStatus = game.getGameStatus();
-        if (game.getGameStatus().equals(GameStatus.ENDED)) {
-            setMinesList(game.getMinePositions());
-            setMovesList(game.getPlayerMoves());
-        }
+        generationNumber = game.getGenerationNumber();
+        configuration = new ArrayList<>(game.getConfiguration().stream().map(CoordinatesDTO::new).toList());
     }
 
     public GameDTO() {
-    }
-
-    public void setMinesList(List<Coordinates> coordinates) {
-        mines = new ArrayList<>(coordinates.stream().map(CoordinatesDTO::new).toList());
-    }
-
-    public void setMovesList(List<Coordinates> coordinates) {
-        moves = new ArrayList<>(coordinates.stream().map(CoordinatesDTO::new).toList());
-    }
-
-    public GameStatus getGameStatus() {
-        return gameStatus;
-    }
-
-    public void setGameStatus(GameStatus gameStatus) {
-        this.gameStatus = gameStatus;
     }
 
     public UUID getGameId() {
@@ -72,43 +46,51 @@ public class GameDTO implements Serializable {
         this.player = player;
     }
 
-    public int getScore() {
-        return score;
+    public int getTotalSum() {
+        return totalSum;
     }
 
-    public int getLevel() {
-        return level;
+    public void setTotalSum(int totalSum) {
+        this.totalSum = totalSum;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public long getDuration() {
-        return duration;
+    public int getPosition() {
+        return position;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
-    public List<CoordinatesDTO> getMines() {
-        return mines;
+    public GameStatus getGameStatus() {
+        return gameStatus;
     }
 
-    public void setMines(List<CoordinatesDTO> mines) {
-        this.mines = mines;
+    public void setGameStatus(GameStatus gameStatus) {
+        this.gameStatus = gameStatus;
     }
 
-    public List<CoordinatesDTO> getMoves() {
-        return moves;
+    public int getGenerationNumber() {
+        return generationNumber;
     }
 
-    public void setMoves(List<CoordinatesDTO> moves) {
-        this.moves = moves;
+    public void setGenerationNumber(int generationNumber) {
+        this.generationNumber = generationNumber;
+    }
+
+    public List<CoordinatesDTO> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(List<CoordinatesDTO> configuration) {
+        this.configuration = configuration;
     }
 }

@@ -19,11 +19,9 @@ public interface Services {
 
     boolean hasValidSession(UUID sid);
 
-    Game makeMove(UUID gameId, Coordinates coordinates, UUID sid);
+    Game makeMove(UUID gameId, int generatedNumber, UUID sid);
 
     List<Game> getAllGames();
 
     List<Game> getAllFinishedGamesForUser(UUID userId);
-
-//    boolean hasWon(Game game, User user, Coordinates move);
 }
