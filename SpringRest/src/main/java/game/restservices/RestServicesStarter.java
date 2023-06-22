@@ -1,6 +1,9 @@
 package game.restservices;
 
+import game.domain.User;
+import game.repository.UserRepository;
 import game.repository.hibernate.HibernateUtils;
+import game.repository.hibernate.UserDBRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +18,10 @@ public class RestServicesStarter {
 
     public static void main(String[] args) {
 //        HibernateUtils.getSessionFactory().openSession();
+//        UserRepository userRepository = new UserDBRepository();
+//        userRepository.add(new User("User1"));
+//        userRepository.add(new User("User2"));
+//        userRepository.add(new User("User3"));
         SpringApplication.run(RestServicesStarter.class, args);
         HibernateUtils.closeSession();
     }

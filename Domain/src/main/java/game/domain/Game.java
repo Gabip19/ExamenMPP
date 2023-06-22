@@ -2,6 +2,10 @@ package game.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @jakarta.persistence.Entity
@@ -9,76 +13,116 @@ import java.util.UUID;
 @AttributeOverride(name = "id", column = @Column(name = "id"))
 
 public class Game extends Entity<UUID> {
-    @Column(name = "player_one_id")
-    private UUID playerOneId;
-    @Column(name = "player_two_id")
-    private UUID playerTwoId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_one_coord")
-    private Coordinates playerOnePlaneLocation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_two_coord")
-    private Coordinates playerTwoPlaneLocation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "winner_id")
-    private User winner;
+    @JoinColumn(name = "player_id")
+    private User player;
 
-    @Transient
-    private UUID activePlayerId;
+    @Column(name = "score")
+    private int score;
+
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Coordinates> minePositions = new ArrayList<>();
+
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Coordinates> playerMoves = new ArrayList<>();
+
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     public Game() {
         setId(UUID.randomUUID());
     }
 
-    public UUID getPlayerOneId() {
-        return playerOneId;
+    public void addMineCoordinate(Coordinates coordinates) {
+        minePositions.add(coordinates);
+        coordinates.setGame(this);
     }
 
-    public void setPlayerOneId(UUID playerOneId) {
-        this.playerOneId = playerOneId;
+    public void removeMineCoordinate(Coordinates coordinates) {
+        minePositions.remove(coordinates);
+        coordinates.setGame(null);
     }
 
-    public UUID getPlayerTwoId() {
-        return playerTwoId;
+    public void addPlayerMove(Coordinates coordinates) {
+        playerMoves.add(coordinates);
+        coordinates.setGame(this);
     }
 
-    public void setPlayerTwoId(UUID playerTwoId) {
-        this.playerTwoId = playerTwoId;
+    public void removePlayerMove(Coordinates coordinates) {
+        playerMoves.remove(coordinates);
+        coordinates.setGame(null);
     }
 
-    public Coordinates getPlayerOnePlaneLocation() {
-        return playerOnePlaneLocation;
+    public User getPlayer() {
+        return player;
     }
 
-    public void setPlayerOnePlaneLocation(Coordinates playerOnePlaneLocation) {
-        this.playerOnePlaneLocation = playerOnePlaneLocation;
+    public void setPlayer(User player) {
+        this.player = player;
     }
 
-    public Coordinates getPlayerTwoPlaneLocation() {
-        return playerTwoPlaneLocation;
+    public int getScore() {
+        return score;
     }
 
-    public void setPlayerTwoPlaneLocation(Coordinates playerTwoPlaneLocation) {
-        this.playerTwoPlaneLocation = playerTwoPlaneLocation;
+    public void setScore(int score) {
+        this.score = score;
     }
 
-    public User getWinner() {
-        return winner;
+    public List<Coordinates> getMinePositions() {
+        return minePositions;
     }
 
-    public void setWinner(User winner) {
-        this.winner = winner;
+    public void setMinePositions(List<Coordinates> minePositions) {
+        this.minePositions = minePositions;
     }
 
-    public UUID getActivePlayerId() {
-        return activePlayerId;
+    public List<Coordinates> getPlayerMoves() {
+        return playerMoves;
     }
 
-    public void setActivePlayerId(UUID activePlayerId) {
-        this.activePlayerId = activePlayerId;
+    public void setPlayerMoves(List<Coordinates> playerMoves) {
+        this.playerMoves = playerMoves;
     }
 
-    public void switchActivePlayer() {
-        activePlayerId = activePlayerId.equals(playerOneId) ? playerTwoId : playerOneId;
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return score == game.score && Objects.equals(player, game.player) && Objects.equals(minePositions, game.minePositions) && Objects.equals(playerMoves, game.playerMoves) && Objects.equals(startDate, game.startDate) && Objects.equals(endDate, game.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player, score, minePositions, playerMoves, startDate, endDate);
     }
 }

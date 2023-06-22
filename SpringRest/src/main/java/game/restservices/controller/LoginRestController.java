@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/game/auth")
+@RequestMapping("/minesweeper/auth")
 public class LoginRestController {
     private Services srv;
 

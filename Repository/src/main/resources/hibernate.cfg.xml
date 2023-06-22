@@ -9,7 +9,7 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.dialect"> org.hibernate.dialect.PostgreSQLDialect </property>
         <property name="hibernate.connection.driver_class"> org.postgresql.Driver </property>
-        <property name="hibernate.connection.url"> jdbc:postgresql://192.168.0.150:5432/ExamenMPP </property>
+        <property name="hibernate.connection.url"> jdbc:postgresql://192.168.0.150:5432/MinesweeperMPP </property>
         <property name="hibernate.connection.username"> postgres </property>
         <property name="hibernate.connection.password"> postgres </property>
 

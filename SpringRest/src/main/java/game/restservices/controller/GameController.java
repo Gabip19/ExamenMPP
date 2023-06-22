@@ -9,12 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/game/games")
+@RequestMapping("/minesweeper/games")
 public class GameController {
     private Services srv;
 
@@ -24,13 +23,10 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<?> startGame(
-            @RequestBody Coordinates coordinates,
-            @RequestHeader("Session-Id") UUID sid
-    ) {
+    public ResponseEntity<?> startGame(@RequestHeader("Session-Id") UUID sid) {
         if (srv.hasValidSession(sid)) {
-            Game game = srv.startGame(coordinates, sid);
-            GameDTO gameDTO = new GameDTO(game.getId(), null, game.getWinner());
+            Game game = srv.startGame(sid);
+            GameDTO gameDTO = new GameDTO(game.getId(), null, null);
             return new ResponseEntity<>(gameDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

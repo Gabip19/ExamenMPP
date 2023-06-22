@@ -42,7 +42,7 @@ public class GameDBRepository implements GameRepository {
             try {
                 transaction = session.beginTransaction();
                 Game game = session.get(Game.class, id);
-                game.setWinner(elem.getWinner());
+//                game.setWinner(elem.getWinner());
                 session.merge(game);
                 transaction.commit();
             } catch (RuntimeException e) {

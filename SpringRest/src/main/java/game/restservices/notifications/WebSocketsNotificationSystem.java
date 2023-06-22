@@ -35,8 +35,8 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
             new GameDTO(game)
         );
         try {
-            webSocketConnections.get(game.getPlayerOneId()).getBasicRemote().sendObject(notification);
-            webSocketConnections.get(game.getPlayerTwoId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
         } catch (EncodeException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,8 +49,8 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
             new GameDTO(game)
         );
         try {
-            webSocketConnections.get(game.getPlayerOneId()).getBasicRemote().sendObject(notification);
-            webSocketConnections.get(game.getPlayerTwoId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
         } catch (EncodeException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,13 +58,13 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
 
     @Override
     public void notifyNewMove(Game game, Coordinates coordinates) {
-        System.out.println("Sending new MOVE to " + game.getActivePlayerId());
+        System.out.println("Sending new MOVE to " + game.getId());
         Notification notification = new Notification(
             NotificationType.NEW_MOVE,
             coordinates
         );
         try {
-            webSocketConnections.get(game.getActivePlayerId()).getBasicRemote().sendObject(notification);
+            webSocketConnections.get(game.getId()).getBasicRemote().sendObject(notification);
         } catch (EncodeException | IOException e) {
             throw new RuntimeException(e);
         }

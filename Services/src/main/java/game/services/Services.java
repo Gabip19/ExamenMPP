@@ -14,7 +14,7 @@ public interface Services {
 
     void logout(UUID sid);
 
-    Game startGame(Coordinates coordinates, UUID sid);
+    Game startGame(UUID sid);
 
     boolean hasValidSession(UUID sid);
 

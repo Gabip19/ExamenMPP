@@ -2,5 +2,7 @@ package game.repository;
 
 import game.domain.Coordinates;
 
-public interface CoordinatesRepository extends Repository<Integer, Coordinates> {
+import java.util.UUID;
+
+public interface CoordinatesRepository extends Repository<UUID, Coordinates> {
 }

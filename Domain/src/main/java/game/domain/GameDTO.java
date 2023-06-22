@@ -17,11 +17,11 @@ public class GameDTO implements Serializable {
     }
 
     public GameDTO(Game game) {
-        this.gameId = game.getId();
-        this.activePlayerId = game.getActivePlayerId();
-        UUID winnerId = null;
-        if (game.getWinner() != null) winnerId = game.getWinner().getId();
-        this.winnerId = winnerId;
+//        this.gameId = game.getId();
+//        this.activePlayerId = game.getActivePlayerId();
+//        UUID winnerId = null;
+//        if (game.getWinner() != null) winnerId = game.getWinner().getId();
+//        this.winnerId = winnerId;
     }
 
     public GameDTO() {

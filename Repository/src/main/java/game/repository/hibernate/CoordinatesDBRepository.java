@@ -6,6 +6,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class CoordinatesDBRepository implements CoordinatesRepository {
     @Override
@@ -26,17 +28,17 @@ public class CoordinatesDBRepository implements CoordinatesRepository {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(UUID id) {
 
     }
 
     @Override
-    public void update(Coordinates elem, Integer id) {
+    public void update(Coordinates elem, UUID id) {
 
     }
 
     @Override
-    public Coordinates findById(Integer id) {
+    public Coordinates findById(UUID id) {
         return null;
     }
 
