@@ -1,6 +1,6 @@
 package game.restservices.controller;
 
-import game.domain.Coordinates;
+import game.domain.Word;
 import game.domain.Game;
 import game.domain.GameDTO;
 import game.services.Services;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/minesweeper/games")
+@RequestMapping("/game/games")
 public class GameController {
     private Services srv;
 
@@ -37,7 +37,7 @@ public class GameController {
     @PostMapping("/{gameId}/moves")
     public ResponseEntity<?> makeMove(
             @PathVariable UUID gameId,
-            @RequestBody Coordinates coordinates,
+            @RequestBody Word coordinates,
             @RequestHeader("Session-Id") UUID sid
     ) {
         if (srv.hasValidSession(sid)) {

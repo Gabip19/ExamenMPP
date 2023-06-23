@@ -1,6 +1,6 @@
 package game.services;
 
-import game.domain.Coordinates;
+import game.domain.Word;
 import game.domain.Game;
 import game.domain.SessionData;
 import game.domain.User;
@@ -19,7 +19,7 @@ public interface Services {
 
     boolean hasValidSession(UUID sid);
 
-    Game makeMove(UUID gameId, Coordinates coordinates, UUID sid);
+    Game makeMove(UUID gameId, Word coordinates, UUID sid);
 
     List<Game> getAllGames();
 

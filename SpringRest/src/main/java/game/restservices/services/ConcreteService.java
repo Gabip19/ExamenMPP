@@ -2,7 +2,8 @@ package game.restservices.services;
 
 import game.domain.*;
 import game.domain.validator.exceptions.LoginException;
-import game.repository.CoordinatesRepository;
+import game.repository.SimpleWordRepository;
+import game.repository.WordRepository;
 import game.repository.GameRepository;
 import game.repository.UserRepository;
 import game.services.NotificationSystem;
@@ -17,15 +18,17 @@ import java.util.*;
 public class ConcreteService implements Services {
     private final UserRepository userRepo;
     private final GameRepository gameRepo;
-    private final CoordinatesRepository coordinatesRepo;
+    private final WordRepository wordRepo;
+    private final SimpleWordRepository simpleWordRepo;
     private final Map<UUID, User> activeSessions = new HashMap<>();
     private final NotificationSystem notificationSystem;
 
     @Autowired
-    public ConcreteService(UserRepository userRepo, GameRepository gameRepo, CoordinatesRepository coordinatesRepo, NotificationSystem notificationSystem) {
+    public ConcreteService(UserRepository userRepo, GameRepository gameRepo, WordRepository coordinatesRepo, SimpleWordRepository simpleWordRepo, NotificationSystem notificationSystem) {
         this.userRepo = userRepo;
         this.gameRepo = gameRepo;
-        this.coordinatesRepo = coordinatesRepo;
+        this.wordRepo = coordinatesRepo;
+        this.simpleWordRepo = simpleWordRepo;
         this.notificationSystem = notificationSystem;
     }
 
@@ -69,20 +72,34 @@ public class ConcreteService implements Services {
         currentGame.setStartDate(LocalDateTime.now());
         currentGame.setPlayer(user);
         currentGame.setGameStatus(GameStatus.PLAYING);
-        currentGame.setCurrentLevel(1);
+
+        long wordsNum = simpleWordRepo.getWordsNumber();
+        Set<Integer> usedPositions = new HashSet<>();
+        Set<Integer> usedWordsIds = new HashSet<>();
 
         Random rand = new Random();
-        for (int i = 1; i <= 4; i++) {
-            int mineY = 1 + rand.nextInt(4);
+        while (usedPositions.size() != 10) {
+            int wordId = Math.toIntExact(rand.nextLong(wordsNum));
+            if (!usedWordsIds.contains(wordId)) {
+                usedWordsIds.add(wordId);
+                int position1 = rand.nextInt(10);
+                int position2 = rand.nextInt(10);
+                while (position1 == position2 || usedPositions.contains(position1) || usedPositions.contains(position2)) {
+                    position1 = rand.nextInt(10);
+                    position2 = rand.nextInt(10);
+                }
+                usedPositions.add(position1);
+                usedPositions.add(position2);
 
-            Coordinates mine = new Coordinates(i, mineY);
-            currentGame.addMineCoordinate(mine);
+                SimpleWord simpleWord = simpleWordRepo.findById(wordId);
+                Word word = new Word();
+                word.setWord(simpleWord);
+                word.setFirstPosition(position1);
+                word.setSecondPosition(position2);
+
+                currentGame.addWord(word);
+            }
         }
-
-        int mineX = 1 + rand.nextInt(4);
-        int mineY = 1 + rand.nextInt(4);
-        Coordinates mine = new Coordinates(mineX, mineY);
-        currentGame.addMineCoordinate(mine);
 
         gameRepo.add(currentGame);
 
@@ -95,36 +112,36 @@ public class ConcreteService implements Services {
     }
 
     @Override
-    public Game makeMove(UUID gameId, Coordinates coordinates, UUID sid) {
+    public Game makeMove(UUID gameId, Word coordinates, UUID sid) {
         Game game = gameRepo.findById(gameId);
 
-        if (game.getGameStatus().equals(GameStatus.PLAYING) && coordinates.getX() == game.getCurrentLevel()) {
-            game.addPlayerMove(coordinates);
-            coordinatesRepo.add(coordinates);
-
-            for (Coordinates mine : game.getMinePositions()) {
-                if (coordinates.getX() == mine.getX() && coordinates.getY() == mine.getY()) {
-                    game.setGameStatus(GameStatus.ENDED);
-                    game.setEndDate(LocalDateTime.now());
-                    notificationSystem.notifyTopUpdate(getAllGames());
-                    gameRepo.update(game, gameId);
-                    return game;
-                }
-            }
-
-            game.setScore(game.getScore() + game.getCurrentLevel());
-
-            if (game.getCurrentLevel() == 4) {
-                game.setGameStatus(GameStatus.ENDED);
-                game.setEndDate(LocalDateTime.now());
-                notificationSystem.notifyTopUpdate(getAllGames());
-            } else {
-                game.nextLevel();
-            }
-
-            gameRepo.update(game, gameId);
-            return game;
-        }
+//        if (game.getGameStatus().equals(GameStatus.PLAYING) && coordinates.getX() == game.getCurrentLevel()) {
+//            game.addPlayerMove(coordinates);
+//            coordinatesRepo.add(coordinates);
+//
+//            for (Word mine : game.getConfiguration()) {
+//                if (coordinates.getX() == mine.getX() && coordinates.getY() == mine.getY()) {
+//                    game.setGameStatus(GameStatus.ENDED);
+//                    game.setEndDate(LocalDateTime.now());
+//                    notificationSystem.notifyTopUpdate(getAllGames());
+//                    gameRepo.update(game, gameId);
+//                    return game;
+//                }
+//            }
+//
+//            game.setScore(game.getScore() + game.getCurrentLevel());
+//
+//            if (game.getCurrentLevel() == 4) {
+//                game.setGameStatus(GameStatus.ENDED);
+//                game.setEndDate(LocalDateTime.now());
+//                notificationSystem.notifyTopUpdate(getAllGames());
+//            } else {
+//                game.nextLevel();
+//            }
+//
+//            gameRepo.update(game, gameId);
+//            return game;
+//        }
         return game;
     }
 

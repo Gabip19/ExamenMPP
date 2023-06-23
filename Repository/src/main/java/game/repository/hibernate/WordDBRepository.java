@@ -1,7 +1,7 @@
 package game.repository.hibernate;
 
-import game.domain.Coordinates;
-import game.repository.CoordinatesRepository;
+import game.domain.Word;
+import game.repository.WordRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class CoordinatesDBRepository implements CoordinatesRepository {
+public class WordDBRepository implements WordRepository {
     private static final Logger logger = LogManager.getLogger();
 
-    public CoordinatesDBRepository() {
+    public WordDBRepository() {
         logger.info("Initializing CoordinatesRepository.");
     }
 
     @Override
-    public void add(Coordinates elem) {
+    public void add(Word elem) {
         logger.traceEntry("Saving Coordinates {}", elem);
         try (Session session = HibernateUtils.getSessionFactory().openSession()) {
             Transaction transaction = null;
@@ -44,13 +44,13 @@ public class CoordinatesDBRepository implements CoordinatesRepository {
     }
 
     @Override
-    public void update(Coordinates elem, UUID id) {
+    public void update(Word elem, UUID id) {
         logger.traceEntry("Updating Coordinates {}", elem);
         try (Session session = HibernateUtils.getSessionFactory().openSession()) {
             Transaction transaction = null;
             try {
                 transaction = session.beginTransaction();
-                Coordinates coordinates = session.get(Coordinates.class, id);
+                Word coordinates = session.get(Word.class, id);
 //                coordinates.setOwned(elem.isOwned());
                 session.merge(coordinates);
                 transaction.commit();
@@ -66,12 +66,12 @@ public class CoordinatesDBRepository implements CoordinatesRepository {
     }
 
     @Override
-    public Coordinates findById(UUID id) {
+    public Word findById(UUID id) {
         return null;
     }
 
     @Override
-    public Iterable<Coordinates> findAll() {
+    public Iterable<Word> findAll() {
         return null;
     }
 }

@@ -9,7 +9,8 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.dialect"> org.hibernate.dialect.PostgreSQLDialect </property>
         <property name="hibernate.connection.driver_class"> org.postgresql.Driver </property>
-        <property name="hibernate.connection.url"> jdbc:postgresql://192.168.0.150:5432/MinesweeperMPP </property>
+        <property name="hibernate.connection.url"> jdbc:postgresql://localhost:5432/ExamenMPPData </property>
+<!--        <property name="hibernate.connection.url"> jdbc:postgresql://localhost:5432/MinesweeperMPP </property>-->
         <property name="hibernate.connection.username"> postgres </property>
         <property name="hibernate.connection.password"> postgres </property>
 
@@ -19,8 +20,9 @@
 
         <!-- List of XML mapping files -->
         <mapping class="game.domain.User"/>
-        <mapping class="game.domain.Coordinates"/>
+        <mapping class="game.domain.Word"/>
         <mapping class="game.domain.Game"/>
+        <mapping class="game.domain.SimpleWord"/>
 
     </session-factory>
 </hibernate-configuration>

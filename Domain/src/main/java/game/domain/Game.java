@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @jakarta.persistence.Entity
@@ -27,7 +26,7 @@ public class Game extends Entity<UUID> {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Coordinates> minePositions = new ArrayList<>();
+    private List<Word> configuration = new ArrayList<>();
 
     @OneToMany(
             fetch = FetchType.EAGER,
@@ -35,7 +34,7 @@ public class Game extends Entity<UUID> {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Coordinates> playerMoves = new ArrayList<>();
+    private List<Word> playerMoves = new ArrayList<>();
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -46,37 +45,26 @@ public class Game extends Entity<UUID> {
     @Column(name = "status")
     private GameStatus gameStatus;
 
-    @Column(name = "current_level")
-    private int currentLevel = 0;
-
-    public int getCurrentLevel() {
-        return currentLevel;
-    }
-
-    public void setCurrentLevel(int currentLevel) {
-        this.currentLevel = currentLevel;
-    }
-
     public Game() {
         setId(UUID.randomUUID());
     }
 
-    public void addMineCoordinate(Coordinates coordinates) {
-        minePositions.add(coordinates);
+    public void addWord(Word coordinates) {
+        configuration.add(coordinates);
         coordinates.setGame(this);
     }
 
-    public void removeMineCoordinate(Coordinates coordinates) {
-        minePositions.remove(coordinates);
+    public void removeWord(Word coordinates) {
+        configuration.remove(coordinates);
         coordinates.setGame(null);
     }
 
-    public void addPlayerMove(Coordinates coordinates) {
+    public void addPlayerMove(Word coordinates) {
         playerMoves.add(coordinates);
         coordinates.setGame(this);
     }
 
-    public void removePlayerMove(Coordinates coordinates) {
+    public void removePlayerMove(Word coordinates) {
         playerMoves.remove(coordinates);
         coordinates.setGame(null);
     }
@@ -97,12 +85,12 @@ public class Game extends Entity<UUID> {
         this.score = score;
     }
 
-    public List<Coordinates> getMinePositions() {
-        return minePositions;
+    public List<Word> getConfiguration() {
+        return configuration;
     }
 
-    public void setMinePositions(List<Coordinates> minePositions) {
-        this.minePositions = minePositions;
+    public void setConfiguration(List<Word> minePositions) {
+        this.configuration = minePositions;
     }
 
     public GameStatus getGameStatus() {
@@ -113,11 +101,11 @@ public class Game extends Entity<UUID> {
         this.gameStatus = gameStatus;
     }
 
-    public List<Coordinates> getPlayerMoves() {
+    public List<Word> getPlayerMoves() {
         return playerMoves;
     }
 
-    public void setPlayerMoves(List<Coordinates> playerMoves) {
+    public void setPlayerMoves(List<Word> playerMoves) {
         this.playerMoves = playerMoves;
     }
 
@@ -143,22 +131,5 @@ public class Game extends Entity<UUID> {
             return Math.abs(duration.toSeconds());
         }
         return -1;
-    }
-
-    public void nextLevel() {
-        currentLevel++;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return score == game.score && Objects.equals(player, game.player) && Objects.equals(minePositions, game.minePositions) && Objects.equals(playerMoves, game.playerMoves) && Objects.equals(startDate, game.startDate) && Objects.equals(endDate, game.endDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(player, score, minePositions, playerMoves, startDate, endDate);
     }
 }

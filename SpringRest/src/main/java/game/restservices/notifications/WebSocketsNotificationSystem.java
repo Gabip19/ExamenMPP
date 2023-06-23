@@ -1,6 +1,6 @@
 package game.restservices.notifications;
 
-import game.domain.Coordinates;
+import game.domain.Word;
 import game.domain.Game;
 import game.domain.GameDTO;
 import game.domain.User;
@@ -57,7 +57,7 @@ public class WebSocketsNotificationSystem implements NotificationSystem {
     }
 
     @Override
-    public void notifyNewMove(Game game, Coordinates coordinates) {
+    public void notifyNewMove(Game game, Word coordinates) {
 //        System.out.println("Sending new MOVE to " + game.getId());
 //        Notification notification = new Notification(
 //            NotificationType.NEW_MOVE,

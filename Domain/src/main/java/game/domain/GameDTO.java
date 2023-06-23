@@ -10,17 +10,15 @@ public class GameDTO implements Serializable {
     private User player;
     private int score;
     private long duration;
-    private int level;
     private GameStatus gameStatus;
-    private List<CoordinatesDTO> mines;
-    private List<CoordinatesDTO> moves;
+    private List<WordDTO> configuration;
+    private List<WordDTO> moves;
 
-    public GameDTO(UUID gameId, User player, int score, long duration, int level, GameStatus gameStatus) {
+    public GameDTO(UUID gameId, User player, int score, long duration, GameStatus gameStatus) {
         this.gameId = gameId;
         this.player = player;
         this.score = score;
         this.duration = duration;
-        this.level = level;
         this.gameStatus = gameStatus;
     }
 
@@ -29,10 +27,9 @@ public class GameDTO implements Serializable {
         player = game.getPlayer();
         score = game.getScore();
         duration = game.getDuration();
-        level = game.getCurrentLevel();
         gameStatus = game.getGameStatus();
         if (game.getGameStatus().equals(GameStatus.ENDED)) {
-            setMinesList(game.getMinePositions());
+            setMinesList(game.getConfiguration());
             setMovesList(game.getPlayerMoves());
         }
     }
@@ -40,12 +37,12 @@ public class GameDTO implements Serializable {
     public GameDTO() {
     }
 
-    public void setMinesList(List<Coordinates> coordinates) {
-        mines = new ArrayList<>(coordinates.stream().map(CoordinatesDTO::new).toList());
+    public void setMinesList(List<Word> coordinates) {
+        configuration = new ArrayList<>(coordinates.stream().map(WordDTO::new).toList());
     }
 
-    public void setMovesList(List<Coordinates> coordinates) {
-        moves = new ArrayList<>(coordinates.stream().map(CoordinatesDTO::new).toList());
+    public void setMovesList(List<Word> coordinates) {
+        moves = new ArrayList<>(coordinates.stream().map(WordDTO::new).toList());
     }
 
     public GameStatus getGameStatus() {
@@ -76,14 +73,6 @@ public class GameDTO implements Serializable {
         return score;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
     public void setScore(int score) {
         this.score = score;
     }
@@ -96,19 +85,19 @@ public class GameDTO implements Serializable {
         this.duration = duration;
     }
 
-    public List<CoordinatesDTO> getMines() {
-        return mines;
+    public List<WordDTO> getConfiguration() {
+        return configuration;
     }
 
-    public void setMines(List<CoordinatesDTO> mines) {
-        this.mines = mines;
+    public void setConfiguration(List<WordDTO> configuration) {
+        this.configuration = configuration;
     }
 
-    public List<CoordinatesDTO> getMoves() {
+    public List<WordDTO> getMoves() {
         return moves;
     }
 
-    public void setMoves(List<CoordinatesDTO> moves) {
+    public void setMoves(List<WordDTO> moves) {
         this.moves = moves;
     }
 }
