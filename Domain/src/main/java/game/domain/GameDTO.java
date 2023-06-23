@@ -12,7 +12,7 @@ public class GameDTO implements Serializable {
     private long duration;
     private GameStatus gameStatus;
     private List<WordDTO> configuration;
-    private List<WordDTO> moves;
+    private List<PlayerMoveDTO> moves;
 
     public GameDTO(UUID gameId, User player, int score, long duration, GameStatus gameStatus) {
         this.gameId = gameId;
@@ -28,9 +28,9 @@ public class GameDTO implements Serializable {
         score = game.getScore();
         duration = game.getDuration();
         gameStatus = game.getGameStatus();
+        moves = new ArrayList<>(game.getPlayerMoves().stream().map(PlayerMoveDTO::new).toList());
         if (game.getGameStatus().equals(GameStatus.ENDED)) {
-            setMinesList(game.getConfiguration());
-            setMovesList(game.getPlayerMoves());
+            configuration = new ArrayList<>(game.getConfiguration().stream().map(WordDTO::new).toList());
         }
     }
 
@@ -41,8 +41,8 @@ public class GameDTO implements Serializable {
         configuration = new ArrayList<>(coordinates.stream().map(WordDTO::new).toList());
     }
 
-    public void setMovesList(List<Word> coordinates) {
-        moves = new ArrayList<>(coordinates.stream().map(WordDTO::new).toList());
+    public void setMovesList(List<PlayerMove> coordinates) {
+        moves = new ArrayList<>(coordinates.stream().map(PlayerMoveDTO::new).toList());
     }
 
     public GameStatus getGameStatus() {
@@ -93,11 +93,11 @@ public class GameDTO implements Serializable {
         this.configuration = configuration;
     }
 
-    public List<WordDTO> getMoves() {
+    public List<PlayerMoveDTO> getMoves() {
         return moves;
     }
 
-    public void setMoves(List<WordDTO> moves) {
+    public void setMoves(List<PlayerMoveDTO> moves) {
         this.moves = moves;
     }
 }

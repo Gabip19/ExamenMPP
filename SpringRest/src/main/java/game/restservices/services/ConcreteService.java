@@ -112,37 +112,45 @@ public class ConcreteService implements Services {
     }
 
     @Override
-    public Game makeMove(UUID gameId, Word coordinates, UUID sid) {
+    public Game makeMove(UUID gameId, PlayerMove move, UUID sid) {
         Game game = gameRepo.findById(gameId);
 
-//        if (game.getGameStatus().equals(GameStatus.PLAYING) && coordinates.getX() == game.getCurrentLevel()) {
-//            game.addPlayerMove(coordinates);
-//            coordinatesRepo.add(coordinates);
-//
-//            for (Word mine : game.getConfiguration()) {
-//                if (coordinates.getX() == mine.getX() && coordinates.getY() == mine.getY()) {
-//                    game.setGameStatus(GameStatus.ENDED);
-//                    game.setEndDate(LocalDateTime.now());
-//                    notificationSystem.notifyTopUpdate(getAllGames());
-//                    gameRepo.update(game, gameId);
-//                    return game;
-//                }
-//            }
-//
-//            game.setScore(game.getScore() + game.getCurrentLevel());
-//
-//            if (game.getCurrentLevel() == 4) {
-//                game.setGameStatus(GameStatus.ENDED);
-//                game.setEndDate(LocalDateTime.now());
-//                notificationSystem.notifyTopUpdate(getAllGames());
-//            } else {
-//                game.nextLevel();
-//            }
-//
-//            gameRepo.update(game, gameId);
-//            return game;
-//        }
+        if (game.getGameStatus().equals(GameStatus.PLAYING)) {
+            game.addPlayerMove(move);
+
+            Word firstWord = null;
+            Word secondWord = null;
+            for (var word : game.getConfiguration()) {
+                if (firstWord == null && goodPosition(move, word)) {
+                    firstWord = word;
+                } else if (secondWord == null && goodPosition(move, word)) {
+                    secondWord = word;
+                }
+            }
+
+            assert firstWord != null;
+            assert secondWord != null;
+            if (firstWord.getWord().getWord().equals(secondWord.getWord().getWord())) {
+                game.setScore(game.getScore() - 2);
+            } else {
+                game.setScore(game.getScore() + 3);
+            }
+
+            if (game.getPlayerMoves().size() == 10) {
+                game.setGameStatus(GameStatus.ENDED);
+                game.setEndDate(LocalDateTime.now());
+            }
+
+            gameRepo.update(game, gameId);
+        }
         return game;
+    }
+
+    private boolean goodPosition(PlayerMove move, Word word) {
+        return (move.getPosition1() == word.getFirstPosition())
+                || (move.getPosition2() == word.getFirstPosition())
+                || (move.getPosition1() == word.getSecondPosition())
+                || (move.getPosition2() == word.getSecondPosition());
     }
 
     @Override
@@ -155,7 +163,7 @@ public class ConcreteService implements Services {
                 } else if (o1.getDuration() > o2.getDuration()) {
                     return 1;
                 } return 0;
-            } else if (o1.getScore() > o2.getScore()) {
+            } else if (o1.getScore() < o2.getScore()) {
                 return -1;
             } return 1;
         });
@@ -166,6 +174,16 @@ public class ConcreteService implements Services {
     public List<Game> getAllFinishedGamesForUser(UUID userId) {
         User user = userRepo.findById(userId);
         return gameRepo.findByUserAndStatus(user, GameStatus.ENDED);
+    }
+
+    @Override
+    public Game getEndedGameWithId(UUID gameId) {
+        return gameRepo.findByIdAndStatus(gameId, GameStatus.ENDED);
+    }
+
+    @Override
+    public void replaceConfiguration(String gameId, ArrayList<WordDTO> configuration) {
+        ArrayList<Word> words = new ArrayList<>();
     }
 
 //    public boolean hasWon(Game game, User user, Coordinates move) {

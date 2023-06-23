@@ -1,8 +1,6 @@
 package game.restservices.controller;
 
-import game.domain.Word;
-import game.domain.Game;
-import game.domain.GameDTO;
+import game.domain.*;
 import game.services.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +35,7 @@ public class GameController {
     @PostMapping("/{gameId}/moves")
     public ResponseEntity<?> makeMove(
             @PathVariable UUID gameId,
-            @RequestBody Word coordinates,
+            @RequestBody PlayerMove coordinates,
             @RequestHeader("Session-Id") UUID sid
     ) {
         if (srv.hasValidSession(sid)) {
@@ -56,5 +54,24 @@ public class GameController {
             gameDTOS.add(new GameDTO(game));
         }
         return new ResponseEntity<>(gameDTOS, HttpStatus.OK);
+    }
+
+    @GetMapping("/{gameId}")
+    public ResponseEntity<?> getGame(@PathVariable UUID gameId) {
+        Game game = srv.getEndedGameWithId(gameId);
+        if (game != null) {
+            GameDTO gameDTO = new GameDTO(game);
+            return new ResponseEntity<>(gameDTO, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{gameId}/configuration")
+    public ResponseEntity<?> replaceConfiguration(
+            @RequestBody ArrayList<WordDTO> configuration,
+            @PathVariable String gameId) {
+
+        srv.replaceConfiguration(gameId, configuration);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

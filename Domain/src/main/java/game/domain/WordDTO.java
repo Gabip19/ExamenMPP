@@ -5,9 +5,10 @@ public class WordDTO {
     private int firstPosition;
     private int secondPosition;
 
-    public WordDTO(Word coordinates) {
-        firstPosition = getFirstPosition();
-        secondPosition = getSecondPosition();
+    public WordDTO(Word word) {
+        this.word = word.getWord().getWord();
+        firstPosition = word.getFirstPosition();
+        secondPosition = word.getSecondPosition();
     }
 
     public WordDTO() {

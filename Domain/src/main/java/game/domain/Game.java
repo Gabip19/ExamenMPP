@@ -34,7 +34,7 @@ public class Game extends Entity<UUID> {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Word> playerMoves = new ArrayList<>();
+    private List<PlayerMove> playerMoves = new ArrayList<>();
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
@@ -59,12 +59,12 @@ public class Game extends Entity<UUID> {
         coordinates.setGame(null);
     }
 
-    public void addPlayerMove(Word coordinates) {
+    public void addPlayerMove(PlayerMove coordinates) {
         playerMoves.add(coordinates);
         coordinates.setGame(this);
     }
 
-    public void removePlayerMove(Word coordinates) {
+    public void removePlayerMove(PlayerMove coordinates) {
         playerMoves.remove(coordinates);
         coordinates.setGame(null);
     }
@@ -101,11 +101,11 @@ public class Game extends Entity<UUID> {
         this.gameStatus = gameStatus;
     }
 
-    public List<Word> getPlayerMoves() {
+    public List<PlayerMove> getPlayerMoves() {
         return playerMoves;
     }
 
-    public void setPlayerMoves(List<Word> playerMoves) {
+    public void setPlayerMoves(List<PlayerMove> playerMoves) {
         this.playerMoves = playerMoves;
     }
 

@@ -160,4 +160,33 @@ public class GameDBRepository implements GameRepository {
         logger.traceExit();
         return new ArrayList<>();
     }
+
+    @Override
+    public Game findByIdAndStatus(UUID gameId, GameStatus gameStatus) {
+        logger.traceEntry("Finding Games by id {} and status {}", gameId, gameStatus);
+
+        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+            Transaction transaction = null;
+            try {
+                transaction = session.beginTransaction();
+                Game game = session.createQuery("from Game g where g.gameStatus = ?1 and g.id = ?2", Game.class)
+                        .setParameter(1, gameStatus)
+                        .setParameter(2, gameId)
+                        .setMaxResults(1)
+                        .uniqueResult();
+                transaction.commit();
+                logger.traceExit(game);
+                return game;
+            } catch (RuntimeException e) {
+                logger.error(e);
+                System.err.println("[GAME REPO] Find all games by user and status failed: " + e.getMessage());
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+            }
+        }
+
+        logger.traceExit();
+        return null;
+    }
 }

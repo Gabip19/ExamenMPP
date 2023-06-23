@@ -23,6 +23,7 @@
         <mapping class="game.domain.Word"/>
         <mapping class="game.domain.Game"/>
         <mapping class="game.domain.SimpleWord"/>
+        <mapping class="game.domain.PlayerMove"/>
 
     </session-factory>
 </hibernate-configuration>
